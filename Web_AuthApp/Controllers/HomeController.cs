@@ -28,6 +28,11 @@ namespace Web_AuthApp.Controllers
             return View();
         }
 
+         public IActionResult Security()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

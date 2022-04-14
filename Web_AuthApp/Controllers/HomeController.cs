@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -28,9 +29,25 @@ namespace Web_AuthApp.Controllers
             return View();
         }
 
-         public IActionResult Security()
+        [Authorize]
+         public IActionResult Secured()
         {
             return View();
+        }
+
+        [HttpGet("login")]
+        public IActionResult Login()
+        {
+            return View();
+        }
+         [HttpPost("login")]
+         public IActionResult Validate(string username, string password)
+        {
+            if(username =="" && password  == "")
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

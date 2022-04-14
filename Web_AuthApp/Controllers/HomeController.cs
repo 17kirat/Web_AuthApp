@@ -36,8 +36,9 @@ namespace Web_AuthApp.Controllers
         }
 
         [HttpGet("login")]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl )
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
          [HttpPost("login")]

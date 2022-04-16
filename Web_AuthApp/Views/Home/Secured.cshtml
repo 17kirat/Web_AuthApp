@@ -3,6 +3,11 @@
 *@
 @{
 }
-<h1> This is a secret file
-
-</h1>
+<h1> This is a secret file</h1>
+<h2>Welcome @User.Identity.Name</h2>
+<ul>
+    @foreach(var c in User.Claims)
+    {
+       <li> @c.Type:@c.Value</li> 
+    }
+</ul>

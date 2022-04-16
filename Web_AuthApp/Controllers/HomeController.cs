@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Web_AuthApp.Models;
 
@@ -28,8 +31,13 @@ namespace Web_AuthApp.Controllers
         {
             return View();
         }
+        [HttpGet("denied")]
+        public IActionResult Denied()
+        {
+            return View();
+        }
 
-        [Authorize]
+        [Authorize(Roles ="Admin")]
          public IActionResult Secured()
         {
             return View();
@@ -42,13 +50,29 @@ namespace Web_AuthApp.Controllers
             return View();
         }
          [HttpPost("login")]
-         public IActionResult Validate(string username, string password)
+         public async Task<IActionResult> Validate(string username, string password, string returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             if(username =="" && password  == "")
             {
-                return Ok();
+                var claims = new List<Claim>();
+                claims.Add(new Claim("username", username));
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, username));
+                claims.Add(new Claim(ClaimTypes.Name, ""));
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                await HttpContext.SignInAsync(claimsPrincipal);
+                return Redirect(returnUrl);
             }
-            return BadRequest();
+            TempData["Error"] = "Error.Username or Password is invalid";
+            return View("login");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return Redirect("/");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
